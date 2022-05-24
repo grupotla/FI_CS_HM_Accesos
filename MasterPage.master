@@ -1,0 +1,305 @@
+﻿<%@ Master Language="VB" CodeFile="MasterPage.master.vb" Inherits="MasterPage" %>
+
+<!DOCTYPE html PUBLIC>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+    <title>Accesos <%=Session("DBAccesosUserId")%> <%=Session("sistema")%></title>    
+    <link rel="stylesheet" type="text/css" href="Content/css/bootstrap.min.css" />     
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <asp:ContentPlaceHolder id="head" runat="server">
+    </asp:ContentPlaceHolder>
+       
+    <style type="text/css">                
+        /*.btn { box-shadow : 3px 3px 3px 0px rgba(0,0,0,0.65); } */
+        #ctl00_ContentPlaceHolder1_pestana li a, 
+        #pestana li a   { box-shadow : 0px 0px 0px 0px rgba(0,0,0,0.65); }        
+        #pestana li a   { box-shadow : 3px -3px 3px 0px rgba(0,0,0,0.65); }        
+        #pestana        { padding-left:50px; }
+        #pestana li     { margin-right:10px; }
+        /*.btn { color:Black; }                    */
+        .breadcrumb { border:1px solid #DDDDDD; }                            
+        .panel-heading  { position:relative; z-index: 0; height:60px; }                
+        .panel-body     { position:relative; z-index: 3; height:380px; top:-110px; background:transparent; }
+        .boton_bar      { position:relative; z-index: 5; top:-53px; }                
+        .tabs_panel { background:rgb(255,255,255); width:auto; height:120%;  max-height:120%;  overflow-x: hidden; overflow-y:auto; padding:0px; padding-top:40px;
+                      box-shadow : 3px -3px 3px 2px rgba(0,0,0,0.30);
+                      border-left : 1px solid #DDDDDD;
+                      border-bottom : 1px solid #DDDDDD; }                                      
+        #footer {color:rgb(200,200,200);font-size:12px;display:inline;text-align:center;position:absolute;bottom:0px;border:0px solid red;}
+    </style>
+
+    <script language="javascript" type="text/javascript">
+// <![CDATA[
+        $(function () {
+            var ide = "";
+            var ide1 = "";
+            $("#menu_modulos li").each(function () { 
+                //console.log('Master (' + $(this).attr("id") + ')(' + 'li_<%=Session("sistema")%>');
+                if ($(this).attr("id") == 'li_<%=Session("sistema")%>') { //menu principal
+                    ide = $(this).attr("id");
+                }
+                //console.log('Master (' + $(this).attr("id") + ')(' + 'li_<%=Session("pestana")%>');
+                if ($(this).attr("id") == 'li_<%=Session("pestana")%>') { //sub menu de opciones
+                    ide1 = $(this).attr("id");
+                }
+            })            
+            $('#' + ide).addClass("active");
+            $('#' + ide1).addClass("active");
+            var ide2 = "";
+            $("#pestana li").each(function () {
+                //console.log($(this).attr("id") + ')(' + 'li1_<%=Session("pestana")%>');
+                if ($(this).attr("id") == 'li1_<%=Session("pestana")%>') { //pestañas de sub menu tab
+                    ide2 = $(this).attr("id");
+                }
+            })           
+            $('#' + ide2).addClass("active");
+            $('input[type=checkbox]').css('height', '10px');
+            $('input[type=radio]').css('height', '15px');
+            $('label').css('text-align', 'right');
+
+            $("a").click(function (event) {//funciona para todos los menu
+                //console.log('evento=' + event.currentTarget.name);
+                if (event.currentTarget.name == 'lnk_') {
+                    $('#<%=opcion_txt.ClientID%>').removeAttr('disabled');
+                    $('#<%=opcion_txt.ClientID%>').val(event.currentTarget.id);
+                    $('#<%=opcion_btn.ClientID%>').click();
+                }          
+            });
+
+        
+            <% If msg <> "" Then 
+                msg = msg.Replace("'", "")
+                msg = msg.Replace(vbCrLf, "<br>")
+            %>
+                $('#modal-texto').html('<%=msg%>');
+                $('#modal-img').html('<%=img%>');                
+                $('#myAlert').addClass('<%=css%>');                
+                $('#myModal').modal();
+            <% End If %>  
+
+
+            //$('body').css('background', 'rgb(249,249,249)');
+
+
+//            < % If GetConnectionStringFromFile("aimar", Server) = Lmaster_aimar_demo Then %>            
+//                < % If Session("OperatorID") > 0 And Session("demo") = True Then %>            
+//                    $('body').css('background', 'silver');
+//                < % Else%>            
+//                    $('body').css('background', 'gray');          
+//                < % End If%>
+//            < % Else%>                            
+//                $('body').css('background', 'rgb(249,249,249)');
+//            < % End If%>
+
+        });
+
+
+
+        function OnSelectionChange (select) { //viene de default del combobox de modulos de cada usuario acceso directo
+            var selectedOption = select.options[select.selectedIndex];
+            //console.log(selectedOption.value);
+            $('#<%=opcion_txt.ClientID%>').removeAttr('disabled');
+            $('#<%=opcion_txt.ClientID%>').val(selectedOption.value);
+            $('#<%=opcion_btn.ClientID%>').click();
+        }
+
+
+        function valor_radio(nombre) {
+            var checked = 999;
+            var len = nombre.length;
+            var ide = '';
+            $("input[type='radio']").each(function () {
+                ide = $(this).attr('id');
+                if (nombre == ide.substr(0,len)) {
+                    if ($(this).context.checked == true) {
+                        checked = $(this).context.value
+                    }
+                }
+                //console.log(nombre + ')(' + ide.substr(0,len) + ')(' + checked);
+            });
+            return checked;
+        }
+
+        function valor_checkbox(nombre) {
+            var checked = 999;
+            var len = nombre.length;
+            var ide = '';
+            //nombre = nombre.replace(/_/gi, "$");  
+            $("input[type=checkbox]").each(function () {                                                
+                ide = $(this).attr('id');                
+                if (nombre == ide.substr(0,len)) {                    
+                    if ($(this).context.checked == true) {
+                        checked = $(this).context.value;
+                    }
+                }
+                //console.log(nombre + ')(' + ide.substr(0,len) + ')(' + checked);
+            });
+            return checked;
+        }
+
+
+
+        function CheckUnCheck(active){
+            var contenido = $('#<%=Session("pestana")%>').html();
+            if (active == 'True')
+                contenido = contenido.replace('153_unchecked.png', '152_check.png');
+            else
+                contenido = contenido.replace('152_check.png', '153_unchecked.png');            
+            //console.log(contenido);
+            $('#<%=Session("pestana")%>').html(contenido);
+        }
+
+// ]]>
+    </script>   
+   
+</head> 
+
+<body>
+    
+    <form id="Form1" class="form_vertical" role="form" runat="server">
+        <div class="container">
+
+
+
+            <nav class="navbar <%=nav%> navbar-fixed-top" role="navigation" > <!-- style="background:rgb(180,180,180)" -->
+                <div class="navbar-header">
+                    <!-- <a class="navbar-brand" href="#" style="background:white"></a> -->
+                    <img src="Content/indice.jpg" width="80" />                                          
+                </div>
+            <% If Session("OperatorID") <> Nothing Then%>
+                <asp:Label ID="menu_db" runat="server" Text=""></asp:Label>
+                <div class="navbar-right">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+    
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <%=Session("Login")%> <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                            <!-- 2020-02-28
+                                <li><asp:LinkButton ID="lnk_usuario" runat="server" title="Editar Perfil Usuario"><%=Licon_edit%>&nbsp;</asp:LinkButton></li>
+                                -->
+                                <li><a href="Login.aspx" title="Logout"><%=Licon_logout%>&nbsp;Logout</a></li>
+
+<%--                                <% If Session("OperatorLevel") = 1 Then%>
+                                   <li><asp:LinkButton ID="lnk_usuarios" runat="server"><%=Licon_keys%></asp:LinkButton></li>
+                                   <li><asp:LinkButton ID="lnk_menues" runat="server"><%=Licon_opciones%></asp:LinkButton></li>
+                                <% End If%>--%>
+                                <li><asp:LinkButton ID="lnk_modulos" runat="server" style="display:none"><%=Licon_home%>&nbsp;</asp:LinkButton></li>
+
+                                <li> &nbsp;&nbsp;&nbsp;&nbsp;Version 2.5.0</li>
+
+                            </ul>
+
+                         </li>
+                    </ul>
+
+                </div>
+
+
+            <% End If%>        
+            </nav>
+
+
+        <br />
+        <br />
+        <br />
+
+            <ol class="breadcrumb">
+            <% if  Session("OperatorID") <> Nothing then %>                                     
+
+                <span class="pull-right">
+                    <% If Session("OperatorLevel") = 1 Then%>
+                        <asp:LinkButton ID="lnk_usuarios" class="btn btn-sm btn-default" runat="server"><%=Licon_keys%></asp:LinkButton>&nbsp;
+                        <!-- 2020-02-28
+                        <asp:LinkButton ID="lnk_menues" class="btn btn-sm btn-default" runat="server"><%=Licon_opciones%></asp:LinkButton>
+                        
+                        <div class="navbar-right">
+                            <ul class="nav navbar-nav">
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding-top:5px;height:28px">Solicitudes<b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li><asp:LinkButton ID="lnk_solicitud" runat="server">Crear</asp:LinkButton></li>                                
+                                        <li><asp:LinkButton ID="lnk_solicitudes" runat="server">Aprobar</asp:LinkButton></li>
+                                    </ul>
+                                 </li>
+                            </ul>
+                        </div>
+                        -->
+                        
+                    <% Else%>                                           
+                        <!-- <asp:LinkButton ID="lnk_solicitud1" class="btn btn-sm btn-default" runat="server"><%=Licon_solicitudes%></asp:LinkButton>                        -->
+                    <% End If%>                   
+                </span>
+
+                <li><asp:LinkButton ID="lnk_bread_hom" runat="server" title="Listado de Usuarios Master Aimar"><%=Licon_home%>&nbsp;</asp:LinkButton></li>
+                <% If Session("DBAccesosUserId") <> Nothing Then%>                                                                                  
+                    <li><a id="usuario" title="" name="lnk_" onmouseover="this.style.cursor='pointer'" style="cursor: pointer;"><span class="badge alert-primary table-bordered"><%=Session("DBAccesosUserId") & " - " & Session("DBAccesosLogin")%></span></a></li>
+                    <% If Session("sistema") <> Session("pestana") Then%>
+                    <li class="text-primary"> <%=Session("sistema")%></li>
+                    <% End If%>
+                    <li class="text-primary"><%=Session("icono")%></li>
+                <% End If%>
+
+            <% Else%>      
+                <li><%=Licon_keys%></li>
+            <% End If%>                  
+            </ol>
+        </div>
+
+        <div class="container">
+            <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+
+        <asp:Button ID="opcion_btn" runat="server" Text="Button" style="display:none"></asp:Button>        
+        <asp:TextBox ID="opcion_txt" runat="server" style="display:none"></asp:TextBox>
+
+    </form>
+
+
+    <center>
+    <div id="footer"> &copy; <%=DateTime.Now.Year()%> by hhmm version 2.5.0</div>
+    </center>
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4 class="modal-title" id="myModalLabel"><%=Session("icono")%> :: <%=Session("sistema")%> :: <%=Session("DBAccesosLogin")%></h4>            
+         </div>        
+         <div class="modal-body">
+                <div id="myAlert" class="alert-info" >
+                    <div class="form-group row">
+                        <div id="modal-img" class="col-sm-1 control-label"><%=img%></div>
+                        <div id="modal-texto"></div>                                
+                    </div>                
+                </div>
+         </div>
+         <div class="modal-footer">
+<%--            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">Close
+            </button>
+            <button type="button" class="btn btn-primary">
+               Submit changes
+            </button>--%>
+         </div>
+      </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<%--<script>
+    $(function () {
+        $('#myModal').modal({
+            keyboard: true
+        })
+    });
+</script>
+--%>
+
+
+
+</body>
+</html>
